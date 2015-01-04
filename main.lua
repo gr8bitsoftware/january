@@ -1,37 +1,58 @@
-local player1, player2, projectile, width, height
-local PLAYER_HEIGHT, PLAYER_WIDTH = 50, 50
+local map, players
 
-local function makePlayer(px, py)
+local function generateMap(width, height)
+  local maxWidth = 0.10 * width
+  local maxHeight = 0.75 * height
+  map = {width = width, height = height}
+  map.buildings = {}
+  table.insert(map.buildings, {
+    width = math.random(0, maxWidth),
+    height = math.random(0, maxHeight),
+    x = math.random(0, width),
+    y = math.random(0, height)
+  })
+
+  return map
+end
+
+local function generatePlayers(map)
   return {
-    x = px,
-    y = py,
-    width = PLAYER_WIDTH,
-    height = PLAYER_HEIGHT,
-    health = 100
+    {x = math.random(0, map.width), y = math.random(0, map.height)},
+    {x = math.random(0, map.width), y = math.random(0, map.height)},
   }
 end
 
 function love.load()
   math.randomseed(os.time())
-  width, height = love.graphics.getDimensions()
-  player1 = makePlayer(math.random(0, width - PLAYER_WIDTH), math.random(0, height - PLAYER_HEIGHT))
-  player2 = makePlayer(math.random(0, width - PLAYER_WIDTH), math.random(0, height - PLAYER_HEIGHT))
+  local width, height = love.graphics.getDimensions()
+  map = generateMap(width, height)
+  players = generatePlayers(map)
 end
 
 function love.update(dt)
 end
 
+local function drawPlayer(player)
+  love.graphics.rectangle("fill", player.x, player.y, 50, 50)
+end
+
+local function drawBuilding(building)
+  love.graphics.rectangle("fill", building.x, building.y, building.width, building.height)
+end
+
 function love.draw()
-  love.graphics.setColor(255, 0, 0, 255)
-  love.graphics.rectangle("fill", player1.x, player1.y, player1.width, player1.height)
-  love.graphics.setColor(0, 0, 255, 255)
-  love.graphics.rectangle("fill", player2.x, player2.y, player2.width, player2.height)
+  for _, building in ipairs(map.buildings) do
+    drawBuilding(building)
+  end
+  for _, player in ipairs(players) do
+    drawPlayer(player)
+  end
 end
 
 function love.keyreleased(key)
   if key == "r" then
-    player1 = makePlayer(math.random(0, width - PLAYER_WIDTH), math.random(0, height - PLAYER_HEIGHT))
-    player2 = makePlayer(math.random(0, width - PLAYER_WIDTH), math.random(0, height - PLAYER_HEIGHT))
+    map = generateMap(love.window.getDimensions())
+    players = generatePlayers(map)
   end
 end
 
