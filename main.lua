@@ -1,25 +1,48 @@
+require "constants"
+
 local map, players
 
 local function generateMap(width, height)
   local maxWidth = 0.10 * width
   local maxHeight = 0.75 * height
-  map = {width = width, height = height}
+  local buildingHeight
+  local buildingX = 0
+
+  local map = {width = width, height = height}
   map.buildings = {}
-  table.insert(map.buildings, {
-    width = math.random(0, maxWidth),
-    height = math.random(0, maxHeight),
-    x = math.random(0, width),
-    y = math.random(0, height)
-  })
+
+  for i = 1, width / BUILDING_MIN_WIDTH do
+    if buildingX > width then break end
+
+    buildingHeight = math.random(BUILDING_MIN_HEIGHT, maxHeight)
+    table.insert(map.buildings, {
+      width = math.random(BUILDING_MIN_WIDTH, maxWidth),
+      height = buildingHeight,
+      x = buildingX,
+      y = height - buildingHeight,
+      color = {0, math.random(0, 100), math.random(100, 255)},
+    })
+    buildingX = map.buildings[i].x + map.buildings[i].width
+  end
 
   return map
 end
 
 local function generatePlayers(map)
   return {
-    {x = math.random(0, map.width), y = math.random(0, map.height)},
-    {x = math.random(0, map.width), y = math.random(0, map.height)},
+    {x = math.random(0, map.width), y = math.random(0, map.height), color = {255, 0, 0}},
+    {x = math.random(0, map.width), y = math.random(0, map.height), color = {0, 255, 0}},
   }
+end
+
+local function drawPlayer(player)
+  love.graphics.setColor(player.color)
+  love.graphics.rectangle("fill", player.x, player.y, PLAYER_WIDTH, PLAYER_HEIGHT)
+end
+
+local function drawBuilding(building)
+  love.graphics.setColor(building.color)
+  love.graphics.rectangle("fill", building.x, building.y, building.width, building.height)
 end
 
 function love.load()
@@ -30,14 +53,6 @@ function love.load()
 end
 
 function love.update(dt)
-end
-
-local function drawPlayer(player)
-  love.graphics.rectangle("fill", player.x, player.y, 50, 50)
-end
-
-local function drawBuilding(building)
-  love.graphics.rectangle("fill", building.x, building.y, building.width, building.height)
 end
 
 function love.draw()
@@ -53,6 +68,8 @@ function love.keyreleased(key)
   if key == "r" then
     map = generateMap(love.window.getDimensions())
     players = generatePlayers(map)
+  elseif key == "q" then
+    love.event.push("quit")
   end
 end
 
