@@ -1,4 +1,6 @@
 require "constants"
+require "player"
+require "building"
 
 local map, players
 
@@ -15,13 +17,13 @@ local function generateMap(width, height)
     if buildingX > width then break end
 
     buildingHeight = math.random(BUILDING_MIN_HEIGHT, maxHeight)
-    table.insert(map.buildings, {
-      width = math.random(BUILDING_MIN_WIDTH, maxWidth),
-      height = buildingHeight,
-      x = buildingX,
-      y = height - buildingHeight,
-      color = {0, math.random(0, 100), math.random(100, 255)},
-    })
+    table.insert(map.buildings, Building.generate(
+      buildingX,
+      height - buildingHeight,
+      math.random(BUILDING_MIN_WIDTH, maxWidth),
+      buildingHeight,
+      {0, math.random(0, 100), math.random(100, 255)}
+    ))
     buildingX = map.buildings[i].x + map.buildings[i].width
   end
 
@@ -30,19 +32,9 @@ end
 
 local function generatePlayers(map)
   return {
-    {x = math.random(0, map.width), y = math.random(0, map.height), color = {255, 0, 0}},
-    {x = math.random(0, map.width), y = math.random(0, map.height), color = {0, 255, 0}},
+    Player.generate(map, {255, 0, 0}),
+    Player.generate(map, {0, 255, 0}),
   }
-end
-
-local function drawPlayer(player)
-  love.graphics.setColor(player.color)
-  love.graphics.rectangle("fill", player.x, player.y, PLAYER_WIDTH, PLAYER_HEIGHT)
-end
-
-local function drawBuilding(building)
-  love.graphics.setColor(building.color)
-  love.graphics.rectangle("fill", building.x, building.y, building.width, building.height)
 end
 
 function love.load()
@@ -57,10 +49,10 @@ end
 
 function love.draw()
   for _, building in ipairs(map.buildings) do
-    drawBuilding(building)
+    Building.draw(building)
   end
   for _, player in ipairs(players) do
-    drawPlayer(player)
+    Player.draw(player)
   end
 end
 
