@@ -14,8 +14,6 @@ Player.generate = function(map, color)
       return {x = alignPlayer(building), y = building.y - PLAYER_HEIGHT, color = color}
     end
   end
-
-  return nil
 end
 
 Player.draw = function(p)
