@@ -3,7 +3,7 @@ require "constants"
 Player = {}
 
 local function alignPlayer(building)
-  local buildingCenter = (2 * building.x + building.width) / 2
+  local buildingCenter = building.x + (building.width / 2)
   return buildingCenter - (PLAYER_WIDTH / 2)
 end
 
