@@ -1,8 +1,9 @@
 require "constants"
 require "player"
 require "building"
+require "projectile"
 
-local map, players
+local map, players, projectiles
 
 local function generateMap(width, height)
   local maxWidth = 0.10 * width
@@ -39,9 +40,13 @@ function love.load()
   local width, height = love.graphics.getDimensions()
   map = generateMap(width, height)
   players = generatePlayers(map)
+  projectiles = {}
 end
 
 function love.update(dt)
+  for _, projectile in ipairs(projectiles) do
+    Projectile.update(projectile, dt)
+  end
 end
 
 function love.draw()
@@ -51,6 +56,9 @@ function love.draw()
   for _, player in ipairs(players) do
     Player.draw(player)
   end
+  for _, projectile in ipairs(projectiles) do
+    Projectile.draw(projectile)
+  end
 end
 
 function love.keyreleased(key)
@@ -59,6 +67,8 @@ function love.keyreleased(key)
     players = generatePlayers(map)
   elseif key == "q" then
     love.event.push("quit")
+  elseif key == "f" then
+    table.insert(projectiles, Projectile.create(players[1], 50, -500))
   end
 end
 
