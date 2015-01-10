@@ -7,13 +7,33 @@ local function alignPlayer(building)
   return buildingCenter - (PLAYER_WIDTH / 2)
 end
 
-Player.generate = function(map, color)
-  local playerX = math.random(0, map.width)
-  for _, building in ipairs(map.buildings) do
-    if playerX > building.x and playerX < building.x + building.width then
-      return {x = alignPlayer(building), y = building.y - PLAYER_HEIGHT, color = color}
-    end
+local function inTable(t, v)
+  for _, tv in ipairs(t) do
+    if v == tv then return true end
   end
+  return false
+end
+
+local function pickRandomBuilding(buildings, ignoredValues)
+  local randomIndex = math.random(2, #buildings - 1)
+  while inTable(ignoredValues, randomIndex) do
+    randomIndex = math.random(2, #buildings - 1)
+  end
+  return randomIndex, buildings[randomIndex]
+end
+
+Player.generate = function(map, colors)
+  local buildingsUsed = {}
+  local buildingIdx, building = nil, nil
+  local players = {}
+
+  for _, color in ipairs(colors) do
+    buildingIdx, building = pickRandomBuilding(map.buildings, buildingsUsed)
+    table.insert(buildingsUsed, buildingIdx)
+    table.insert(players, {x = alignPlayer(building), y = building.y - PLAYER_HEIGHT, color = color})
+  end
+
+  return players
 end
 
 Player.draw = function(p)

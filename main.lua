@@ -31,10 +31,7 @@ local function generateMap(width, height)
 end
 
 local function generatePlayers(map)
-  return {
-    Player.generate(map, {255, 0, 0}),
-    Player.generate(map, {0, 255, 0}),
-  }
+  return Player.generate(map, {{255, 0, 0}, {0, 255, 0}})
 end
 
 function love.load()
