@@ -3,7 +3,7 @@ require "player"
 require "building"
 require "projectile"
 
-local map, players, projectiles
+local map, players, projectiles, FPS
 
 local function generateMap(width, height)
   local maxWidth = 0.10 * width
@@ -37,16 +37,31 @@ end
 
 function love.load()
   math.randomseed(os.time())
+  io.stdout:setvbuf("no") -- Prints out to console, remove for release
   local width, height = love.graphics.getDimensions()
   map = generateMap(width, height)
   players = generatePlayers(map)
   projectiles = {}
+  FPS = 0
 end
 
 function love.update(dt)
-  for _, projectile in ipairs(projectiles) do
+  local bi, hit = 0, nil
+  local toRemove = {}
+  for i, projectile in ipairs(projectiles) do
     Projectile.update(projectile, dt)
+    bi, hit = Building.search(map.buildings, projectile.x)
+    if hit and hit.y <= projectile.y then
+      hit = nil
+      table.remove(map.buildings, bi)
+      table.insert(toRemove, i)
+    end
   end
+  table.sort(toRemove)
+  for i = #toRemove, 1, -1 do
+    table.remove(projectiles, toRemove[i])
+  end
+  FPS = 1 / dt
 end
 
 function love.draw()
@@ -59,6 +74,9 @@ function love.draw()
   for _, projectile in ipairs(projectiles) do
     Projectile.draw(projectile)
   end
+
+  love.graphics.setColor({255, 255, 255})
+  love.graphics.print(FPS .. " fps", 0, 0)
 end
 
 function love.keyreleased(key)

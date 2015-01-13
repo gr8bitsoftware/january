@@ -21,3 +21,4 @@ Projectile.create = function(player, velX, velY)
     velY = velY,
   }
 end
+
