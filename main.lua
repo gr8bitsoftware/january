@@ -3,7 +3,7 @@ require "player"
 require "building"
 require "projectile"
 
-local map, players, projectiles, FPS
+local map, players, projectiles, FPS, WIDTH, HEIGHT
 
 local function generateMap(width, height)
   local maxWidth = 0.10 * width
@@ -43,6 +43,7 @@ function love.load()
   players = generatePlayers(map)
   projectiles = {}
   FPS = 0
+  WIDTH, HEIGHT = love.window.getDimensions()
 end
 
 function love.update(dt)
@@ -54,6 +55,10 @@ function love.update(dt)
     if hit and hit.y <= projectile.y then
       hit = nil
       table.remove(map.buildings, bi)
+      table.insert(toRemove, i)
+    elseif projectile.x + PROJECTILE_WIDTH < 0 or projectile.x > WIDTH then
+      table.insert(toRemove, i)
+    elseif projectile.y > HEIGHT then
       table.insert(toRemove, i)
     end
   end
