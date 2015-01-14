@@ -94,6 +94,3 @@ function love.keyreleased(key)
     table.insert(projectiles, Projectile.create(players[1], 50, -500))
   end
 end
-
-function love.quit()
-end
