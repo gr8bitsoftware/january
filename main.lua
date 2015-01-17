@@ -46,16 +46,36 @@ function love.load()
   WIDTH, HEIGHT = love.window.getDimensions()
 end
 
+local function checkCollision(projectile, player)
+  return (
+    projectile.x < player.x + PLAYER_WIDTH and
+    projectile.x + PROJECTILE_WIDTH > player.x and
+    projectile.y < player.y + PLAYER_HEIGHT and
+    projectile.y + PROJECTILE_HEIGHT > player.y
+  )
+end
+
 function love.update(dt)
   local bi, hit = 0, nil
   local toRemove = {}
   for i, projectile in ipairs(projectiles) do
     Projectile.update(projectile, dt)
+    -- Check Player collisions
+    for pi, player in ipairs(players) do
+      if checkCollision(projectile, player) then
+        table.insert(toRemove, i)
+        table.remove(players, pi)
+        break
+      end
+    end
+    if #toRemove > 0 then break end
+    -- Check building collisions
     bi, hit = Building.search(map.buildings, projectile.x)
     if hit and hit.y <= projectile.y then
       hit = nil
       table.remove(map.buildings, bi)
       table.insert(toRemove, i)
+    -- Check out of bounds
     elseif projectile.x + PROJECTILE_WIDTH < 0 or projectile.x > WIDTH then
       table.insert(toRemove, i)
     elseif projectile.y > HEIGHT then
