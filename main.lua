@@ -37,7 +37,6 @@ end
 
 function love.load()
   math.randomseed(os.time())
-  io.stdout:setvbuf("no") -- Prints out to console, remove for release
   local width, height = love.graphics.getDimensions()
   map = generateMap(width, height)
   players = generatePlayers(map)
@@ -55,7 +54,7 @@ local function checkCollision(projectile, player)
   )
 end
 
-function love.update(dt)
+local function updateProjectiles(dt)
   local bi, hit = 0, nil
   local toRemove = {}
   for i, projectile in ipairs(projectiles) do
@@ -64,7 +63,10 @@ function love.update(dt)
     for pi, player in ipairs(players) do
       if checkCollision(projectile, player) then
         table.insert(toRemove, i)
-        table.remove(players, pi)
+        player.health = player.health - math.random()
+        if player.health <= 0 then
+          table.remove(players, pi)
+        end
         break
       end
     end
@@ -86,6 +88,10 @@ function love.update(dt)
   for i = #toRemove, 1, -1 do
     table.remove(projectiles, toRemove[i])
   end
+end
+
+function love.update(dt)
+  updateProjectiles(dt)
   FPS = 1 / dt
 end
 
@@ -109,7 +115,7 @@ function love.keyreleased(key)
     map = generateMap(love.window.getDimensions())
     players = generatePlayers(map)
   elseif key == "q" then
-    love.event.push("quit")
+    love.event.quit()
   elseif key == "f" then
     table.insert(projectiles, Projectile.create(players[1], 50, -500))
   end
