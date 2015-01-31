@@ -1,8 +1,12 @@
 local Game = {}
 
-function love.load()
-  Game.screen = require "start_screen"
+function Game.setScreen(screen)
+  Game.screen = require(screen)
   Game.screen.load(Game)
+end
+
+function love.load()
+  Game.setScreen("start_screen")
 end
 
 function love.update(dt)

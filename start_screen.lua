@@ -1,26 +1,30 @@
 local Screen = {}
+local TITLE = [[ Blocks Shooting Blocks ]]
+local INSTRUCTIONS = [[
+Press any key to Start
+'Q' to Quit
+]]
 
 function Screen.load(game)
   Screen.game = game
   Screen.width, Screen.height = love.window.getDimensions()
-  Screen.font = love.graphics.newFont(36)
+  Screen.titleFont = love.graphics.newFont(36)
+  Screen.instructionsFont = love.graphics.newFont(18)
 end
 
 function Screen.update(dt)
 end
 
 function Screen.draw()
-  love.graphics.setFont(Screen.font)
-  love.graphics.print(
-    "Blocks Shooting Blocks",
-    Screen.width / 4,
-    Screen.height / 3
-  )
+  love.graphics.setFont(Screen.titleFont)
+  love.graphics.print(TITLE, Screen.width / 4, Screen.height / 3)
+
+  love.graphics.setFont(Screen.instructionsFont)
+  love.graphics.print(INSTRUCTIONS, Screen.width / 3, Screen.height * 2 / 3)
 end
 
 function Screen.keypressed(key)
-  Screen.game.screen = require "play_screen"
-  Screen.game.screen.load(Screen.game)
+  Screen.game.setScreen("play_screen")
   Screen.game = nil
 end
 
