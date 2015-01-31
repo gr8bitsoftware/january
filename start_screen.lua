@@ -10,6 +10,7 @@ function Screen.load(game)
   Screen.width, Screen.height = love.window.getDimensions()
   Screen.titleFont = love.graphics.newFont(36)
   Screen.instructionsFont = love.graphics.newFont(18)
+  love.keyboard.setTextInput(false)
 end
 
 function Screen.update(dt)
@@ -24,7 +25,7 @@ function Screen.draw()
 end
 
 function Screen.keypressed(key)
-  Screen.game.setScreen("play_screen")
+  Screen.game.setScreen("input_screen")
   Screen.game = nil
 end
 

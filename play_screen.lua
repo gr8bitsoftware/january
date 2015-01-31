@@ -35,14 +35,16 @@ local function generatePlayers(map)
   return Player.generate(map, {{255, 0, 0}, {0, 255, 0}})
 end
 
-function Screen.load()
+function Screen.load(game)
   math.randomseed(os.time())
+  Screen.game = game
   Screen.width, Screen.height = love.window.getDimensions()
   Screen.map = generateMap(Screen.width, Screen.height)
   Screen.players = generatePlayers(Screen.map)
   Screen.projectiles = {}
   Screen.FPS = 0
   Screen.font = love.graphics.newFont(12)
+  love.keyboard.setTextInput(false)
 end
 
 local function checkCollision(projectile, player)
@@ -122,7 +124,14 @@ function Screen.keypressed(key)
     Screen.map = generateMap(love.window.getDimensions())
     Screen.players = generatePlayers(Screen.map)
   elseif key == "f" then
-    table.insert(Screen.projectiles, Projectile.create(Screen.players[1], 50, -500))
+    table.insert(
+      Screen.projectiles,
+      Projectile.create(
+        Screen.players[1],
+        Screen.game.angle,
+        Screen.game.power
+      )
+    )
   end
 end
 

@@ -17,6 +17,10 @@ function love.draw()
   Game.screen.draw()
 end
 
+function love.textinput(text)
+  Game.screen.textinput(text)
+end
+
 function love.keypressed(key)
   if key == "q" then
     love.event.quit()
