@@ -74,9 +74,12 @@ local function updateProjectiles(dt)
     -- Check building collisions
     bi, hit = Building.search(Screen.map.buildings, projectile.x)
     if hit and hit.y <= projectile.y then
-      hit = nil
-      table.remove(Screen.map.buildings, bi)
+      hit.y = hit.y * (1 + math.random())
+      if hit.y > Screen.height - 10 then
+        table.remove(Screen.map.buildings, bi)
+      end
       table.insert(toRemove, i)
+      hit = nil
     -- Check out of bounds
     elseif projectile.x + PROJECTILE_WIDTH < 0 or projectile.x > Screen.width then
       table.insert(toRemove, i)
@@ -115,8 +118,6 @@ function Screen.keypressed(key)
   if key == "r" then
     Screen.map = generateMap(love.window.getDimensions())
     Screen.players = generatePlayers(Screen.map)
-  elseif key == "q" then
-    love.event.quit()
   elseif key == "f" then
     table.insert(Screen.projectiles, Projectile.create(Screen.players[1], 50, -500))
   end
