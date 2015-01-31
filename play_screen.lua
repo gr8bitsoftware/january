@@ -75,6 +75,9 @@ local function updateProjectiles(dt)
     bi, hit = Building.search(Screen.map.buildings, projectile.x)
     if hit and hit.y <= projectile.y then
       hit.y = hit.y * (1 + math.random())
+      if hit.player then
+        hit.player.y = hit.y - PLAYER_HEIGHT
+      end
       if hit.y > Screen.height - 10 then
         table.remove(Screen.map.buildings, bi)
       end

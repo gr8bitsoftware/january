@@ -38,6 +38,7 @@ Player.generate = function(map, colors)
       height = PLAYER_HEIGHT,
       health = 1.0,
     })
+    building.player = players[#players]
   end
 
   return players
